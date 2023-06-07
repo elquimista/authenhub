@@ -1,0 +1,12 @@
+<% content_for :asset_scope, 'signup' %>
+
+<div data-public-key-options="<%= Base64.encode64(@options.as_json.to_json) %>">
+  <p>
+    <div><span>webauthn_id:</span></div>
+    <code id="webauthn_id">Waiting...</code>
+  </p>
+  <p>
+    <div><span>public_key:</span></div>
+    <code id="public_key">Waiting...</code>
+  </p>
+</div>

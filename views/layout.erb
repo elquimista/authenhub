@@ -1,0 +1,8 @@
+<html>
+  <head>
+    <%= assets(:js) %>
+  </head>
+  <body class="<%= content_for(:asset_scope) %>">
+    <%= yield %>
+  </body>
+</html>

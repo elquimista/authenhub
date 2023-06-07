@@ -1,0 +1,5 @@
+.env
+
+# Precompiled asset artifacts
+compiled_assets.json
+public/assets

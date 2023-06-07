@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  app:
+    build:
+      context: ./
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./:/root/app
+    ports:
+      - 127.0.0.1:9696:9696
+    env_file: .env
+    restart: unless-stopped
+    command: bash

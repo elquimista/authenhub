@@ -1,0 +1,5 @@
+<% content_for :asset_scope, 'login' %>
+
+<div data-public-key-options="<%= Base64.encode64(@options.as_json.to_json) %>">
+  <div id="error_message"></div>
+</div>
