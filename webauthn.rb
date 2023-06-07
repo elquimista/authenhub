@@ -13,5 +13,5 @@ WebAuthn.configure do |config|
   # interaction with the user.
   # This hint may be overridden by the browser.
   # https://www.w3.org/TR/webauthn/#dom-publickeycredentialcreationoptions-timeout
-  config.credential_options_timeout = 60_000
+  config.credential_options_timeout = ENV['WEBAUTHN_CREDENTIAL_OPTIONS_TIMEOUT'].to_i
 end
