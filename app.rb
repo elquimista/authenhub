@@ -15,8 +15,16 @@ class App < Roda
   plugin :json_parser
   plugin :cookies
 
+  def hostname
+    request.env["HTTP_X_AUTHENHUB_HOST"] || request.host
+  end
+
+  def auth_cookie_name
+    "auth-#{hostname.gsub('.', '-')}"
+  end
+
   def logged_in?
-    request.cookies['auth'] == ENV['ADMIN_WEBAUTHN_ID']
+    request.cookies[auth_cookie_name] == ENV['ADMIN_WEBAUTHN_ID']
   end
 
   route do |r|
@@ -50,7 +58,7 @@ class App < Roda
         public_key: ENV['ADMIN_WEBAUTHN_PUBLIC_KEY'],
         sign_count: 0
       )
-      response.set_cookie('auth',
+      response.set_cookie(auth_cookie_name,
                           value: webauthn_cred.id,
                           domain: ENV['COOKIE_DOMAIN'],
                           path: '/',
@@ -65,7 +73,7 @@ class App < Roda
     end
 
     r.get 'logout' do
-      response.delete_cookie('auth', domain: ENV['COOKIE_DOMAIN'])
+      response.delete_cookie(auth_cookie_name, domain: ENV['COOKIE_DOMAIN'])
       'Logged out'
     end
 
