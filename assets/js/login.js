@@ -19,7 +19,8 @@
           authenticatorData: bufferToBase64url(fedCredObj.response.authenticatorData),
           clientDataJSON: bufferToBase64url(fedCredObj.response.clientDataJSON),
           signature: bufferToBase64url(fedCredObj.response.signature),
-          userHandle: fedCredObj.response.userHandle,
+          // userHandle: fedCredObj.response.userHandle,
+          userHandle: '', // FIXME: prefer above line when webauthn-ruby releases a patch.
         },
         type: fedCredObj.type,
       }
