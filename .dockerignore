@@ -1,8 +1,11 @@
 Dockerfile
 docker-compose.yml
+.dockerignore
 
 .env
 example.env
 
 .git
 .gitignore
+
+README.md
