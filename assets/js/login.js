@@ -5,7 +5,9 @@
     const publicKeyOptions = JSON.parse(atob(dataElement.dataset.publicKeyOptions))
 
     publicKeyOptions.challenge = base64urlToBuffer(publicKeyOptions.challenge)
-    publicKeyOptions.allowCredentials[0].id = base64urlToBuffer(publicKeyOptions.allowCredentials[0].id)
+    publicKeyOptions.allowCredentials.forEach(e => {
+      e.id = base64urlToBuffer(e.id)
+    })
 
     try {
       const fedCredObj = await navigator.credentials.get({ publicKey: publicKeyOptions })

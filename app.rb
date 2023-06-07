@@ -23,8 +23,16 @@ class App < Roda
     "auth-#{hostname.gsub('.', '-')}"
   end
 
+  def admin_webauthn_creds
+    JSON.parse(ENV['ADMIN_WEBAUTHN_CREDS'])
+  end
+
+  def admin_webauthn_ids
+    admin_webauthn_creds.keys
+  end
+
   def logged_in?
-    request.cookies[auth_cookie_name] == ENV['ADMIN_WEBAUTHN_ID']
+    admin_webauthn_ids.include?(request.cookies[auth_cookie_name])
   end
 
   route do |r|
@@ -44,7 +52,7 @@ class App < Roda
         r.redirect r.params['redirect_uri'] if r.params['redirect_uri']
       else
         @options = WebAuthn::Credential.options_for_get(
-          allow: [ENV['ADMIN_WEBAUTHN_ID']]
+          allow: admin_webauthn_ids
         )
         session['authentication_challenge'] = @options.challenge
         view 'login'
@@ -55,7 +63,7 @@ class App < Roda
       webauthn_cred = WebAuthn::Credential.from_get(r.params['publicKeyCredential'])
       webauthn_cred.verify(
         session['authentication_challenge'],
-        public_key: ENV['ADMIN_WEBAUTHN_PUBLIC_KEY'],
+        public_key: admin_webauthn_creds[webauthn_cred.id],
         sign_count: 0
       )
       response.set_cookie(auth_cookie_name,

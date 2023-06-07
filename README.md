@@ -30,7 +30,7 @@ When you are running the app for the first time, you probably want to register y
    docker-compose down; docker-compose up -d
    ```
 1. Go to `"https://<authenhub_app_domain>/signup"` in the browser. If you are running this app locally, it's best to run it behind Nginx proxy along with `Let's Encrypt` free SSL.
-1. Once you are done interacting with your Yubikey, copy `webauthn_id` and `public_key` values, and fill `ADMIN_WEBAUTHN_ID` and `ADMIN_WEBAUTHN_PUBLIC_KEY` with those values in `.env` file.
+1. Once you are done interacting with your Yubikey, copy `webauthn_id` and `public_key` values, and append the pair to `ADMIN_WEBAUTHN_CREDS` in `.env` file.
 1. Disable signup by reverting `SIGNUP_ENABLED` to `"false"` in `.env` file.
 1. Start a fresh container again:
    ```sh
