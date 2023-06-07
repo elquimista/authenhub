@@ -4,7 +4,7 @@ RUN apt-get update && \
     apt-get install -y build-essential
 
 WORKDIR /root/app
-COPY ./* ./
+COPY ./ ./
 RUN bundle
 
 CMD rackup -o 0.0.0.0 -p 9696
