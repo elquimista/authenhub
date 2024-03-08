@@ -91,7 +91,9 @@ class App < Roda
           webauthn_id = WebAuthn.generate_user_id
           @options = WebAuthn::Credential.options_for_create(
             user: { id: webauthn_id, name: 'FA' },
-            exclude: []
+            exclude: [],
+            authenticator_selection: { residentKey: 'preferred' },
+            extensions: { credProps: true, minPinLength: true }
           )
           session['creation_challenge'] = @options.challenge
           view 'signup'
