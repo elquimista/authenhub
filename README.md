@@ -123,3 +123,9 @@ docker-compose exec -it app bash
 ```sh
 (docker) $ rake assets:precompile
 ```
+
+## Build & Push Docker Image
+```sh
+docker buildx create --use --platform=linux/amd64,linux/arm64
+docker buildx build --platform linux/amd64,linux/arm64 --push -t elquimista/authenhub:latest .
+```
