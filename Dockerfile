@@ -6,6 +6,6 @@ RUN apt-get update && \
 WORKDIR /root/app
 COPY ./ ./
 RUN bundle
-RUN rake assets:precompile
+RUN SESSION_SECRET="2c854d74df3ce0c0ef4e" rake assets:precompile
 
 CMD rackup -o 0.0.0.0 -p 9696
