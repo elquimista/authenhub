@@ -1,7 +1,11 @@
 require 'roda'
+require 'bcrypt'
+require 'rotp'
 require_relative './webauthn'
 
 class App < Roda
+  class AuthenticationError < StandardError; end
+
   plugin :json
   plugin :render
 
@@ -23,6 +27,17 @@ class App < Roda
     "auth-#{hostname.gsub('.', '-')}"
   end
 
+  def set_cookie(value)
+    response.set_cookie(auth_cookie_name,
+      value: value,
+      domain: ENV['COOKIE_DOMAIN'],
+      path: '/',
+      expires: Time.now + ENV.fetch('COOKIE_EXPIRES_IN', 3600).to_i,
+      secure: true,
+      httponly: true
+    )
+  end
+
   def admin_webauthn_creds
     JSON.parse(ENV['ADMIN_WEBAUTHN_CREDS'])
   end
@@ -31,8 +46,17 @@ class App < Roda
     admin_webauthn_creds.keys
   end
 
+  def admin_password_pair_creds
+    JSON.parse(ENV['ADMIN_PASSWORD_PAIR_CREDS'])
+  end
+
+  def admin_password_pair_usernames
+    admin_password_pair_creds.keys
+  end
+
   def logged_in?
-    admin_webauthn_ids.include?(request.cookies[auth_cookie_name])
+    admin_webauthn_ids.include?(request.cookies[auth_cookie_name]) ||
+    admin_password_pair_usernames.include?(request.cookies[auth_cookie_name])
   end
 
   route do |r|
@@ -60,22 +84,22 @@ class App < Roda
     end
 
     r.post 'login' do
-      webauthn_cred = WebAuthn::Credential.from_get(r.params['publicKeyCredential'])
-      webauthn_cred.verify(
-        session['authentication_challenge'],
-        public_key: admin_webauthn_creds[webauthn_cred.id],
-        sign_count: 0
-      )
-      response.set_cookie(auth_cookie_name,
-                          value: webauthn_cred.id,
-                          domain: ENV['COOKIE_DOMAIN'],
-                          path: '/',
-                          expires: Time.now + ENV.fetch('COOKIE_EXPIRES_IN', 3600).to_i,
-                          secure: true,
-                          httponly: true
-                         )
+      if r.params['publicKeyCredential']
+        webauthn_cred = WebAuthn::Credential.from_get(r.params['publicKeyCredential'])
+        webauthn_cred.verify(
+          session['authentication_challenge'],
+          public_key: admin_webauthn_creds[webauthn_cred.id],
+          sign_count: 0
+        )
+        set_cookie(webauthn_cred.id)
+      else
+        raise AuthenError unless admin_password_pair_usernames.include?(r.params['username'])
+        raise AuthenError unless BCrypt::Password.new(admin_password_pair_creds[r.params['username']]['password_hash']) == r.params['password']
+        raise AuthenError unless ROTP::TOTP.new(admin_password_pair_creds[r.params['username']]['otp_secret']).verify(r.params['otp'])
+        set_cookie(r.params['username'])
+      end
       { redirect_uri: r.params['redirect_uri'] }
-    rescue WebAuthn::Error
+    rescue WebAuthn::Error, AuthenticationError
       response.status = 401
       'Unauthorized'
     end
@@ -100,12 +124,20 @@ class App < Roda
         end
 
         r.post do
-          webauthn_cred = WebAuthn::Credential.from_create(r.params['publicKeyCredential'])
-          webauthn_cred.verify(session['creation_challenge'])
-          {
-            webauthn_id: webauthn_cred.id,
-            public_key: webauthn_cred.public_key
-          }
+          if r.params['publicKeyCredential']
+            webauthn_cred = WebAuthn::Credential.from_create(r.params['publicKeyCredential'])
+            webauthn_cred.verify(session['creation_challenge'])
+            {
+              webauthn_id: webauthn_cred.id,
+              public_key: webauthn_cred.public_key
+            }
+          else
+            {
+              username: r.params['username'],
+              password_hash: BCrypt::Password.create(r.params['password']),
+              otp_secret: ROTP::Base32.random
+            }
+          end
         rescue WebAuthn::Error
         end
       end

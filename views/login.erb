@@ -1,5 +1,28 @@
 <% content_for :asset_scope, 'login' %>
 
 <div data-public-key-options="<%= Base64.encode64(@options.as_json.to_json) %>">
+  <form id="usernamePasswordLoginForm">
+    <p>
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" />
+    </p>
+    <p>
+      <label for="password">Password:</label>
+      <input type="password" name="password" id="password" />
+    </p>
+    <p>
+      <label for="otp">OTP:</label>
+      <input type="password" name="otp" id="otp" />
+    </p>
+    <p>
+      <button type="submit">Sign In</button>
+    </p>
+  </form>
+
+  <hr />
+
+  <p>Or</p>
+  <button type="button" id="btnUsePasskey">Use Passkey</button>
+
   <div id="error_message"></div>
 </div>

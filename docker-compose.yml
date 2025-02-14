@@ -1,6 +1,6 @@
-version: '3.9'
 services:
   app:
+    container_name: authenhub
     build:
       context: ./
     stdin_open: true
@@ -12,3 +12,9 @@ services:
     env_file: .env
     restart: unless-stopped
     command: bash
+    networks:
+      - nginx_net
+
+networks:
+  nginx_net:
+    external: true

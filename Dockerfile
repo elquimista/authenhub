@@ -6,5 +6,6 @@ RUN apt-get update && \
 WORKDIR /root/app
 COPY ./ ./
 RUN bundle
+RUN rake assets:precompile
 
 CMD rackup -o 0.0.0.0 -p 9696

@@ -1,6 +1,32 @@
 <% content_for :asset_scope, 'signup' %>
 
 <div data-public-key-options="<%= Base64.encode64(@options.as_json.to_json) %>">
+  <form id="usernamePasswordSignupForm">
+    <p>
+      <label for="username">Username:</label>
+      <input type="text" name="username" id="username" />
+    </p>
+    <p>
+      <label for="password">Password:</label>
+      <input type="password" name="password" id="password" />
+    </p>
+    <p>
+      <button type="submit">Create Account</button>
+    </p>
+  </form>
+  <p>
+    <div><span>password_hash:</span></div>
+    <code id="password_hash">Waiting...</code>
+  </p>
+  <p>
+    <div><span>otp_secret:</span></div>
+    <code id="otp_secret">Waiting...</code>
+  </p>
+
+  <hr />
+
+  <p>Or</p>
+  <button type="button" id="btnUsePasskey">Use Passkey</button>
   <p>
     <div><span>webauthn_id:</span></div>
     <code id="webauthn_id">Waiting...</code>

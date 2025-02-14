@@ -1,5 +1,27 @@
 ;(function () {
-  async function main() {
+  async function useUsernamePasswordPair(e) {
+    e.preventDefault()
+    const formdata = new FormData(e.target)
+
+    try {
+      const response = await fetch('/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: formdata.get('username'),
+          password: formdata.get('password'),
+        }),
+      })
+      const result = await response.json()
+      document.querySelector('#password_hash').textContent = result.password_hash
+      document.querySelector('#otp_secret').textContent = result.otp_secret
+    } catch (err) {
+      document.querySelector('#password_hash').textContent = 'Error occured. Please try again.'
+      console.log(err)
+    }
+  }
+
+  async function usePasskey() {
     const { base64urlToBuffer, bufferToBase64url } = window
     const dataElement = document.querySelector('div[data-public-key-options]')
     const publicKeyOptions = JSON.parse(atob(dataElement.dataset.publicKeyOptions))
@@ -37,7 +59,8 @@
 
   window.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('body.signup') !== null) {
-      main()
+      document.getElementById('usernamePasswordSignupForm').addEventListener('submit', useUsernamePasswordPair)
+      document.getElementById('btnUsePasskey').addEventListener('click', usePasskey)
     }
   })
 })();
