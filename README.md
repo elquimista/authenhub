@@ -1,15 +1,14 @@
 # authenhub
-Simple authentication gateway with webauthn
+Simple authentication gateway with OTP-based 2FA and webauthn support
 
 ## Usage
 
 ### docker-compose.yml
 ```yaml
-version: '3'
 services:
   app:
     container_name: authenhub
-    image: elquimista/authenhub:latest
+    image: elquimista/authenhub:2.0
     restart: unless-stopped
     ports:
       - 127.0.0.1:9696:9696
