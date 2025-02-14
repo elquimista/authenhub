@@ -8,7 +8,7 @@ Simple authentication gateway with OTP-based 2FA and webauthn support
 services:
   app:
     container_name: authenhub
-    image: elquimista/authenhub:2.1
+    image: elquimista/authenhub:2.2
     restart: unless-stopped
     ports:
       - 127.0.0.1:9696:9696
