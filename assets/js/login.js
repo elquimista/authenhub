@@ -4,7 +4,7 @@
     const formdata = new FormData(e.target)
 
     try {
-      const response = await fetch('/login', {
+      const response = await fetch(window.location.href, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -48,7 +48,7 @@
         type: fedCredObj.type,
       }
 
-      const response = await fetch('/login', {
+      const response = await fetch(window.location.href, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ publicKeyCredential }),
