@@ -9,5 +9,6 @@ example.env
 
 .git
 .gitignore
+.github
 
 README.md
